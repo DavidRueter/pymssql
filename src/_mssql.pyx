@@ -48,6 +48,7 @@ import binascii
 import datetime
 import re
 import uuid
+import gc #dbr
 
 from sqlfront cimport *
 
@@ -1980,5 +1981,27 @@ cdef void init_mssql():
 
     dberrhandle(err_handler)
     dbmsghandle(msg_handler)
+
+#dbr start
+####################################
+## Exit _mmsql and free resources ##
+####################################
+def exit_mssql():
+    """
+    Free all resources that were allocated by db-lib.
+
+    Call when done with the database to avoid memory leaks.
+    """
+    try:
+        gc.collect()
+        dbexit()
+    except Exception as e:
+        raise MSSQLDriverException("dbexit() failed")
+
+    dberrhandle(err_handler)
+    dbmsghandle(msg_handler)
+
+    return None
+
 
 init_mssql()

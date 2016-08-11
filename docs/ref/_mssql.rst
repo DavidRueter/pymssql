@@ -33,6 +33,10 @@ Functions
     Gets current maximum number of simultaneous connections allowed to be open
     at any given time.
 
+.. function:: exit_mssql()
+
+    Closes all connections and frees all resources allocated by by _mssql.
+
 ``MSSQLConnection`` class
 =========================
 

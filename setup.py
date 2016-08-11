@@ -58,8 +58,8 @@ else:
 
 from setuptools.command.test import test as TestCommand
 
-LINK_FREETDS_STATICALLY = True
-LINK_OPENSSL = False
+LINK_FREETDS_STATICALLY = False
+LINK_OPENSSL = True
 
 ROOT = osp.abspath(osp.dirname(__file__))
 

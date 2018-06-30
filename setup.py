@@ -90,7 +90,7 @@ from distutils.dir_util import remove_tree
 import struct
 
 def extract_version():
-    with open(osp.join(ROOT, 'src', 'pymssql_version.h')) as f:
+    with open(osp.join(ROOT, 'src', 'version.h')) as f:
         content = f.read()
 
     # Parse file content that looks like this:
@@ -286,12 +286,14 @@ class build_ext(_build_ext):
                     freetds_dir = 'vs2015'
                 elif sys.version_info >= (3, 3):
                     freetds_dir = 'vs2010'
+                elif sys.version_info >= (2, 7) and BITNESS == 64:
+                    freetds_dir = 'vs2010'
                 else:
                     freetds_dir = 'vs2008'
                 if LINK_FREETDS_STATICALLY:
                     libraries = [
-                        'db-lib', 'tds', 'replacements',
-                        'iconv',
+                        'iconv', 'replacements',
+                        'db-lib', 'tds', 'tdsutils',
                         'ws2_32', 'wsock32', 'kernel32', 'shell32',
                     ]
                     if LINK_OPENSSL:
@@ -314,12 +316,14 @@ class build_ext(_build_ext):
                 e.extra_compile_args.extend(extra_cc_args)
                 e.libraries.extend(libraries)
                 e.include_dirs.append(osp.join(FREETDS, 'include'))
+                e.include_dirs.append(osp.join(ROOT, 'build', 'include'))
+                e.library_dirs.append(osp.join(ROOT, 'build', 'lib'))
                 if LINK_OPENSSL:
-                    freetds_lib_dir = 'lib'
+                    freetds_lib_dir = ''
                 else:
-                    freetds_lib_dir = 'lib-nossl'
+                    freetds_lib_dir = 'lib'
                 if LINK_FREETDS_STATICALLY:
-                    e.library_dirs.append(osp.join(FREETDS, freetds_lib_dir, 'static'))
+                    e.library_dirs.append(osp.join(FREETDS, freetds_lib_dir))
                 else:
                     e.library_dirs.append(osp.join(FREETDS, freetds_lib_dir))
                 if LINK_OPENSSL:
@@ -463,6 +467,7 @@ setup(
       "Programming Language :: Python :: 3.3",
       "Programming Language :: Python :: 3.4",
       "Programming Language :: Python :: 3.5",
+      "Programming Language :: Python :: 3.6",
       "Programming Language :: Python :: Implementation :: CPython",
       "Topic :: Database",
       "Topic :: Database :: Database Engines/Servers",

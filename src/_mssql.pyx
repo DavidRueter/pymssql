@@ -31,6 +31,9 @@ DEF MSSQLDB_MSGSIZE = 1024
 DEF PYMSSQL_MSGSIZE = (MSSQLDB_MSGSIZE * 8)
 DEF EXCOMM = 9
 
+# Provide constant missing from FreeTDS 0.91 so that we can build against it
+DEF DBVERSION_73 = 7
+
 ROW_FORMAT_TUPLE = 1
 ROW_FORMAT_DICT = 2
 
@@ -61,7 +64,7 @@ from cpython.long cimport PY_LONG_LONG
 from cpython.ref cimport Py_INCREF
 from cpython.tuple cimport PyTuple_New, PyTuple_SetItem
 
-cdef extern from "pymssql_version.h":
+cdef extern from "version.h":
     const char *PYMSSQL_VERSION
 
 cdef extern from "cpp_helpers.h":
@@ -92,7 +95,8 @@ cdef int MIN_INT = -2147483648
 
 # Store the module version
 __full_version__ = PYMSSQL_VERSION.decode('ascii')
-__version__ = '.'.join(__full_version__.split('.')[:3]) # drop '.dev' from 'X.Y.Z.dev'
+__version__ = '.'.join(__full_version__.split('.')[:3])
+VERSION = tuple(int(c) for c in __full_version__.split('.')[:3])
 
 #############################
 ## DB-API type definitions ##
@@ -525,6 +529,29 @@ cdef class MSSQLConnection:
                 return 5.0
             elif version == 4:
                 return 4.2
+            return None
+
+    property tds_version_tuple:
+        """
+        Reports what TDS version the connection is using in tuple form which is
+        more easily handled (parse, compare) programmatically. If no TDS
+        version can be detected the value is None.
+        """
+        def __get__(self):
+            cdef int version = dbtds(self.dbproc)
+            if version == 11:
+                return (7, 3)
+            elif version == 10:
+                return (7, 2)
+            elif version == 9:
+                return (7, 1)
+            elif version == 8:
+                return (7, 0)
+            elif version == 6:
+                return (5, 0)
+            elif version == 4:
+                return (4, 2)
+            return None
 
     def __cinit__(self):
         log("_mssql.MSSQLConnection.__cinit__()")
@@ -1723,6 +1750,10 @@ cdef int _tds_ver_str_to_constant(verstr) except -1:
         return DBVERSION_71
     if verstr == u'7.2':
         return DBVERSION_72
+    if verstr == u'7.3':
+        return DBVERSION_73
+    if verstr == u'8.0':
+        return DBVERSION_71
     raise MSSQLException('unrecognized tds version: %s' % verstr)
 
 #######################

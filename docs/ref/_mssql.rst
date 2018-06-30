@@ -9,7 +9,21 @@ Complete documentation of ``_mssql`` module classes, methods and properties.
 Module-level symbols
 ====================
 
-Variables whose values you can change to alter behavior on a global basis.
+.. data:: __version__
+
+   See :data:`pymssql.__version__`.
+
+.. data:: VERSION
+
+   See :data:`pymssql.VERSION`.
+
+   .. versionadded:: 2.2.0
+
+.. data:: __full_version__
+
+   See :data:`pymssql.__full_version__`.
+
+Variables whose values you can change to alter behavior on a global basis:
 
 .. data:: login_timeout
 
@@ -103,13 +117,7 @@ Functions
         the literal shown above.
 
     .. note::
-        If you need to connect to Azure:
-
-        * Use FreeTDS 0.91 or newer (this is already a requirement of pymssql)
-        * Use TDS 7.1 or newer
-        * Make sure FreeTDS is built with SSL support
-        * Specify the database name you are connecting to in the *database* parameter
-        * Specify the username in *username@servername* form
+        If you need to connect to Azure read the relevant :doc:`topic </azure>`.
 
     .. versionadded:: 2.1.1
         The ability to connect to Azure.
@@ -137,6 +145,12 @@ Functions
       with pymssql version 2.0.0 and up to version 2.1.2 it was already possible
       to set the TDS protocol version to ask for when connecting to the server
       but version 7.1 was used if not specified.
+
+    .. warning::
+      FreeTDS added sopport for TDS protocol version 7.3 in version 0.95. You
+      need to be careful of not asking for TDS 7.3 if you know the undelying
+      FreeTDS used by pymssql is version 0.91 as it won't raise any error nor
+      keep you from passing such an invalid value.
 
 ``MSSQLConnection`` object properties
 -------------------------------------
@@ -181,7 +195,8 @@ Functions
 .. attribute:: MSSQLConnection.tds_version
 
    The TDS version used by this connection. Can be one of ``4.2``, ``5.0``
-   ``7.0``, ``7.1``, ``7.2`` and ``7.3``.
+   ``7.0``, ``7.1``, ``7.2``, ``7.3`` or ``None`` if no TDS version could be
+   detected.
 
    .. versionchanged:: 2.2.0
        For correctness and consistency the value used to indicate TDS 7.1
@@ -189,6 +204,15 @@ Functions
 
    .. versionchanged:: 2.1.3
       ``7.3`` was added as a possible value.
+
+.. attribute:: MSSQLConnection.tds_version_tuple
+
+   .. versionadded:: 2.2.0
+
+   The TDS version used by this connection in tuple form which is more easily
+   handled (parse, compare) programmatically. Can be one of ``(4, 2)``,
+   ``(5, 0)``, ``(7, 0)``, ``(7, 1)``, ``(7, 2)``, ``(7, 3)`` or ``None`` if no
+   TDS version could be detected.
 
 ``MSSQLConnection`` object methods
 ----------------------------------

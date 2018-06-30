@@ -9,7 +9,23 @@ Complete documentation of ``pymssql`` module classes, methods and properties.
 Module-level symbols
 ====================
 
-Constants, required by the DB-API 2.0 (:pep:`249`) specification.
+.. data:: __version__
+
+   pymssql version as an Unicode constant. E.g. ``u"2.1.1"``, ``u"2.2.0"``
+
+.. data:: VERSION
+
+   pymssql version in tuple form which is more easily handled (parse, compare)
+   programmatically. E.g. ``(2, 1, 1)``, ``(2, 2, 0)``
+
+   .. versionadded:: 2.2.0
+
+.. data:: __full_version__
+
+   pymssql version as an Unicode constant but including any (:pep:`440`)
+   suffixes.  E.g. ``u"2.1.0.dev2"``, ``u"2.2.0.dev"``
+
+Constants, required by the DB-API 2.0 specification:
 
 .. data:: apilevel
 
@@ -57,28 +73,7 @@ Functions
        timeouts have a global effect.
 
    .. note::
-       If you need to connect to Azure:
-
-       * Use FreeTDS 0.91 or newer (this is already a requirement of pymssql)
-       * Use TDS 7.1 or newer
-       * Make sure FreeTDS is built with SSL support
-       * Specify the database name you are connecting to in the ``connect()`` call
-       * Specify the username in *username@servername* form in the ``connect()`` call
-
-       Example::
-
-           pymssql.connect("xxx.database.windows.net", "username@xxx.database.windows.net", "password", "db_name")
-
-       or::
-
-           pymssql.connect("myalias", "username@xxx.database.windows.net", "password", "db_name")
-
-       if you've defined ``myalias`` in the ``freetds.conf`` FreeTDS config file::
-
-           [myalias]
-           host = xxx.database.windows.net
-           tds version = 7.1
-           ...
+       If you need to connect to Azure read the relevant :doc:`topic </azure>`.
 
    .. versionadded:: 2.1.1
        The ability to connect to Azure.
@@ -116,13 +111,24 @@ Functions
      version, and in version 2.1.2 it was possible to set it but version 7.1 was
      used if not specified.
 
+   .. warning::
+     FreeTDS added sopport for TDS protocol version 7.3 in version 0.95. You
+     need to be careful of not asking for TDS 7.3 if you know the undelying
+     FreeTDS used by pymssql is version 0.91 as it won't raise any error nor
+     keep you from passing such an invalid value.
+
 .. function:: get_dbversion()
 
-    TBD
+    Wrapper around DB-Library's ``dbversion()`` function which returns the
+    version of FreeTDS (actually the version of DB-Lib) in string form. E.g.
+    ``"freetds v0.95"``.
+
+    Unfortunately 1) The value returned doesn't indicate minor revisions (e.g.
+    ``v0.95.50``), 2) Its data type makes it harder to compare versions or
+    handle it programmatically in other ways and 3) It hasn't been consistently
+    updated through the FreeTDS release history.
 
     A pymssql extension to the DB-API 2.0.
-
-.. todo:: Document ``pymssql`` connection ``get_dbversion()``.
 
 .. function:: set_max_connections(number)
 

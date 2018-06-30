@@ -11,99 +11,78 @@ Generally, you will want to install pymssql with:
 
     pip install pymssql
 
-`FreeTDS <http://www.freetds.org/>`_ is required. On some platforms, we provide
-a pre-compiled FreeTDS to make installing easier, but you may want to install
-FreeTDS before doing ``pip install pymssql`` if you run into problems or need
-features or bug fixes in a newer version of FreeTDS. You can `build FreeTDS
-from source <http://www.freetds.org/userguide/build.htm>`_ if you want the
-latest. If you're okay with the latest version that your package manager
-provides, then you can use your package manager of choice to install FreeTDS.
-E.g.:
+Most of the times this should be all what's needed.
 
-* Ubuntu/Debian:
+* Linux
+
+  First make sure you are using pip_ version 8.1.0 or newer so you can take
+  advantage of its support for :pep:`513` Linux *manylinux1* binary Wheel
+  packages. Starting with pymssql version 2.1.3 we provide such wheel packages
+  that bundle a static copy of FreeTDS so no additional dependency download or
+  compilation steps are necessary.
+
+  Then run:
 
   .. code-block:: bash
 
-      sudo apt-get install freetds-dev
+      pip install pymssql
 
-* Mac OS X with `Homebrew <http://brew.sh/>`_:
+  it will fetch the package from the `Python Package Index (PyPI)`_ and install
+  it.
+
+  .. note::
+
+    The statically-linked FreeTDS version bundled with our official pymssql
+    Linux Wheel package doesn't have SSL support so it can't be used to connect
+    to :doc:`Azure <azure>`. Also it doesn't have Kerberos support so it can't
+    be used to perform `domain logins`_ to SQL Server.
+
+* Mac OS X
+
+  (with `Homebrew <http://brew.sh/>`_):
+
+  Run:
 
   .. code-block:: bash
 
       brew install freetds
+      pip install pymssql
 
-Docker
-------
+  it will fetch the source distribution from the `Python Package Index
+  (PyPI)`_, build and install pymssql.
+
+* Windows
+
+  First make sure you are using pip_ version 6.0 or newer so you can take
+  advantage of its support for Windows binary Wheel packages. Starting with
+  pymssql version 2.1.3 we provide such wheel packages that bundle a static copy
+  of FreeTDS so no additional download or compilation steps are necessary.
+
+  Then run:
+
+  .. code-block:: bash
+
+      pip install pymssql
+
+  it will fetch the package from the `Python Package Index (PyPI)`_ and install
+  it.
+
+  .. note::
+
+    The statically-linked FreeTDS version bundled with our official pymssql
+    Windows Wheel package doesn't have SSL support so it can't be used to
+    connect to :doc:`Azure <azure>`.
+
+See Installation and :doc:`freetds` for more advanced scenarios.
+
+**Docker**
 
 (Experimental)
 
-Another possible way to get started quickly with pymssql is to use a `Docker
-<https://www.docker.com/>`_ image.
+Another possible way to get started quickly with pymssql is to use a
+:doc:`docker` image.
 
-See the Docker docs for installation instructions for a number of platforms;
-you can try this link: https://docs.docker.com/installation/#installation
-
-There is a pymssql docker image on the Docker Registry at:
-
-https://registry.hub.docker.com/u/pymssql/pymssql/
-
-It is a Docker image with:
-
-* Ubuntu 14.04 LTS (trusty)
-* Python 2.7.6
-* pymssql 2.1.2.dev
-* FreeTDS 0.91
-* SQLAlchemy 0.9.8
-* Alembic 0.7.4
-* Pandas 0.15.2
-* Numpy 1.9.1
-* IPython 2.3.1
-
-To try it, first download the image (this requires Internet access and could
-take a while):
-
-.. code-block:: bash
-
-    docker pull pymssql/pymssql
-
-Then run a Docker container using the image with:
-
-.. code-block:: bash
-
-    docker run -it --rm pymssql/pymssql
-
-By default, if no command is specified, an `IPython <http://ipython.org>`_
-shell is invoked. You can override the command if you wish -- e.g.:
-
-.. code-block:: bash
-
-    docker run -it --rm pymssql/pymssql bin/bash
-
-Here's how using the Docker container looks in practice:
-
-.. code-block:: bash
-
-    $ docker pull pymssql/pymssql
-    ...
-    $ docker run -it --rm pymssql/pymssql
-    Python 2.7.6 (default, Mar 22 2014, 22:59:56)
-    Type "copyright", "credits" or "license" for more information.
-
-    IPython 2.1.0 -- An enhanced Interactive Python.
-    ?         -> Introduction and overview of IPython's features.
-    %quickref -> Quick reference.
-    help      -> Python's own help system.
-    object?   -> Details about 'object', use 'object??' for extra details.
-
-    In [1]: import pymssql; pymssql.__version__
-    Out[1]: u'2.1.1'
-
-    In [2]: import sqlalchemy; sqlalchemy.__version__
-    Out[2]: '0.9.7'
-
-    In [3]: import pandas; pandas.__version__
-    Out[3]: '0.14.1'
-
+.. _domain logins: http://www.freetds.org/userguide/domains.htm
 
 Architecture
 ============
@@ -148,6 +127,27 @@ PyPI page contains:
 - source distribution (``.tar.gz``)
 - wheels (``.whl``) for Windows
 
+`FreeTDS <http://www.freetds.org/>`_ is required. On some platforms, we provide
+a pre-compiled FreeTDS to make installing easier, but you may want to install
+FreeTDS before doing ``pip install pymssql`` if you run into problems or need
+features or bug fixes in a newer version of FreeTDS. You can `build FreeTDS
+from source <http://www.freetds.org/userguide/build.htm>`_ if you want the
+latest. If you're okay with the latest version that your package manager
+provides, then you can use your package manager of choice to install FreeTDS.
+E.g.:
+
+* Ubuntu/Debian:
+
+  .. code-block:: bash
+
+      sudo apt-get install freetds-dev
+
+* Mac OS X with `Homebrew <http://brew.sh/>`_:
+
+  .. code-block:: bash
+
+      brew install freetds
+
 Project Discussion
 ==================
 
@@ -191,3 +191,6 @@ We would be happy to have:
 * Help from the community with maintenance of this documentation.
 
 If interested, please connect with us on the mailing list.
+
+.. _pip: https://pip.pypa.io
+.. _Python Package Index (PyPI): https://pypi.python.org
